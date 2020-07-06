@@ -5,7 +5,7 @@ module.exports = {
     devtool: "inline-source-map",
 
     entry: {
-        content: './src/app/content.ts',
+        content: './src/app/content.tsx',
         background: './src/app/background.ts',
         popup: './src/ui/popup.tsx',
     },
@@ -16,13 +16,26 @@ module.exports = {
     },
 
     resolve: {
-        extensions: [".ts", ".tsx", ".js"]
+        extensions: [".ts", ".tsx", ".js", ".svg"]
     },
 
     module: {
         rules: [
             { test: /\.tsx?$/, loader: "ts-loader" },
-            { test: /\.css$/, use: ['style-loader', 'css-loader'] }
+            { test: /\.css$/, use: ['style-loader', 'css-loader'] },
+            {
+                test: /\.(jpe?g|png|gif|svg)$/i,
+                use: [
+                  'file-loader?limit=100000',
+                  {
+                    loader: 'img-loader',
+                    options: {
+                      enabled: true,
+                      optipng: true
+                    }
+                  }
+                ]
+              }
         ]
     },
 };

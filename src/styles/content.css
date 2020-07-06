@@ -1,0 +1,25 @@
+.replySVG {
+    padding: 1px 2px 0px 0px;
+    height: 22.5px;
+    width: 22.5px;
+}
+.reply-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 39px;
+    width: 39px;
+    transition-property: background-color, box-shadow;
+    transition-duration: 0.2s;
+    border-radius: 9999px;
+}
+
+.reply-container:hover {
+    cursor: pointer;
+    background-color: rgba(29, 161, 242, 0.1);
+}
+
+.reply-container:active {
+    cursor: pointer;
+    background-color: rgba(29, 161, 242, 0.2);
+}
