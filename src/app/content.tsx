@@ -1,4 +1,3 @@
-import * as $ from 'jquery';
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import svgHash from "../reply.svg";
@@ -6,24 +5,25 @@ import "../styles/content.css";
 
 const ReplySVG = chrome.runtime.getURL('js/' + svgHash);
 
-chrome.runtime.sendMessage({}, (response) => {
-    var checkReady = setInterval(() => {
-        if (document.readyState === "complete" && $("div[aria-label='Add reaction']").toArray().length > 0) {
-            clearInterval(checkReady);
-
-            const targets = $("div[aria-label='Add reaction']").toArray();
-            for (const target of targets) {
-                let container = document.createElement("div");
-                container.className = "Reply";
-                target.parentElement.parentElement.append(container);
-            }
-
-            for (const container of $(".Reply")) {
-                ReactDOM.render(<Reply />, container);
+let observer = new MutationObserver(mutations => {
+    for(let mutation of mutations) {
+        for(let addedNode of mutation.addedNodes) {
+            if (addedNode.nodeName === "DIV") {
+                try {
+                    const buttonMenu = addedNode.firstChild.firstChild.lastChild;
+                    const button = buttonMenu.lastChild as HTMLDivElement;
+                    if (button.getAttribute("aria-label") === "More actions") {
+                        const container = document.createElement("div");
+                        buttonMenu.appendChild(container);
+                        ReactDOM.render(<Reply />, container);
+                    }
+                } catch (error) {} // bro i dont give a fuuuuuuck, body that shit
             }
         }
-    })
+    }
 });
+observer.observe(document, { childList: true, subtree: true });
+
 
 class Reply extends React.Component {
     render() {
@@ -34,9 +34,3 @@ class Reply extends React.Component {
         )
     }
 }
-
-// parent().addreact
-// ReactDOM.render(
-//     <Reply />,
-//     document.getElementsByTagName('body')[0]
-// )
