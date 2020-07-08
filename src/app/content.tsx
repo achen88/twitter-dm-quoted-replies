@@ -10,12 +10,15 @@ let observer = new MutationObserver(mutations => {
         for(let addedNode of mutation.addedNodes) {
             if (addedNode.nodeName === "DIV") {
                 try {
-                    const buttonMenu = addedNode.firstChild.firstChild.lastChild;
+                    const tweetContainer = addedNode.firstChild.firstChild;
+                    const tweetSpan = tweetContainer.firstChild.nextSibling.firstChild.firstChild.firstChild as HTMLSpanElement;
+                    const buttonMenu = tweetContainer.lastChild;
                     const button = buttonMenu.lastChild as HTMLDivElement;
+
                     if (button.getAttribute("aria-label") === "More actions") {
                         const container = document.createElement("div");
                         buttonMenu.appendChild(container);
-                        ReactDOM.render(<Reply />, container);
+                        ReactDOM.render(Reply({ data: tweetSpan.innerText }), container);
                     }
                 } catch (error) {} // bro i dont give a fuuuuuuck, body that shit
             }
@@ -24,13 +27,22 @@ let observer = new MutationObserver(mutations => {
 });
 observer.observe(document, { childList: true, subtree: true });
 
-
-class Reply extends React.Component {
-    render() {
-        return (
-            <div className="reply-container" onClick={() => console.log("I GOT CLICKED")}>
-                <img className="replySVG" src={ReplySVG} />
-            </div>
-        )
+const timer = setInterval(() => {
+    if (document.readyState === "complete") {
+        const s = document.createElement('script');
+        s.src = chrome.extension.getURL('js/script.js');
+        (document.head||document.documentElement).appendChild(s);
+        s.onload = function() {
+            s.remove();
+        };
+        clearInterval(timer);
     }
+});
+
+const Reply = (props) => {
+    return (
+        <div className="reply-container" onClick={() => {document.dispatchEvent(new CustomEvent('dataEntry', {detail: props})); console.log(props)}}>
+            <img className="replySVG" src={ReplySVG} />
+        </div>
+    )
 }
