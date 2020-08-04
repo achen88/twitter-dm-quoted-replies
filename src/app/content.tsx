@@ -22,8 +22,8 @@ const format = (replyText) => {
 
 const inject = (addedNode) => {
     const tweetContainer = addedNode.firstChild.firstChild;
-    const incomingMessageSpan = tweetContainer.firstChild.nextSibling.firstChild.firstChild.firstChild as HTMLSpanElement;
-    const outgoingMessageSpan = tweetContainer.firstChild.firstChild.firstChild.firstChild as HTMLSpanElement;
+    const incomingMessageSpan = tweetContainer?.firstChild?.nextSibling?.firstChild?.firstChild?.firstChild as HTMLSpanElement;
+    const outgoingMessageSpan = tweetContainer?.firstChild?.firstChild?.firstChild?.firstChild as HTMLSpanElement;
     const buttonMenu = tweetContainer.lastChild;
     const button = buttonMenu.lastChild as HTMLDivElement;
     if (button.getAttribute("aria-label") === "More actions") {
