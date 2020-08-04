@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import * as $ from "jquery";
 import svgHash from "../reply.svg";
 import "../styles/content.css";
 import { truncateLength, delimiter } from "../constants";
@@ -25,19 +26,19 @@ const format = (replyHeader, replyText) => {
 
 const inject = (addedNode) => {
     const tweetContainer = addedNode.firstChild.firstChild;
-    const incomingMessageSpan = tweetContainer?.firstChild?.nextSibling?.firstChild?.firstChild?.firstChild as HTMLSpanElement;
-    const outgoingMessageSpan = tweetContainer?.firstChild?.firstChild?.firstChild?.firstChild as HTMLSpanElement;
+    const incomingMessageContainer = tweetContainer?.firstChild?.nextSibling?.firstChild?.firstChild as HTMLSpanElement;
+    const outgoingMessageContainer = tweetContainer?.firstChild?.firstChild?.firstChild as HTMLSpanElement;
     const buttonMenu = tweetContainer.lastChild;
     const button = buttonMenu.lastChild as HTMLDivElement;
     if (button.getAttribute("aria-label") === "More actions") {
         const container = document.createElement("div");
         buttonMenu.appendChild(container);
         let messageText, replyHeader;
-        if (incomingMessageSpan.innerText) {
-            messageText = incomingMessageSpan.innerText;
+        if (incomingMessageContainer.innerText) {
+            messageText = incomingMessageContainer.innerText;
             replyHeader = "Replied to you:\n";
         } else {
-            messageText = outgoingMessageSpan.innerText;
+            messageText = outgoingMessageContainer.innerText;
             replyHeader = "Replied to me:\n";
         }
         ReactDOM.render(Reply({ data: format(replyHeader, messageText) }), container);
@@ -48,10 +49,9 @@ let observer = new MutationObserver(mutations => {
     for(let mutation of mutations) {
         for(let addedNode of mutation.addedNodes) {
             if (addedNode.nodeName === "DIV") {
-                console.log(addedNode);
                 try {
                     inject(addedNode);
-                } catch (error) {} // lol
+                } catch (error) {}
             }
         }
     }
@@ -70,9 +70,29 @@ const timer = setInterval(() => {
     }
 });
 
+// special case where user clicks into quoted tweet preview in DMs, DOM mutation is not observed
+// if you have a better idea PLEASE let me know
+let currentURL = window.location.href;
+setInterval(() => {
+    if (currentURL !== window.location.href) {
+        currentURL = window.location.href;
+        const injectHandler = setInterval(() => {
+            if ($("div[data-testid='messageEntry']").toArray().length > 0) {
+                $("div[data-testid='messageEntry']").toArray().forEach((node) => {
+                    try {
+                        inject(node.parentElement);
+                    } catch (error) {}
+                })
+                clearInterval(injectHandler);
+            }
+        });
+        setTimeout(() => {clearInterval(injectHandler)}, 3000); // in the case nothing needs to be injected
+    }
+});
+
 const Reply = (props) => {
     return (
-        <div className="reply-container" onClick={() => {document.dispatchEvent(new CustomEvent('dataEntry', {detail: props})); console.log(props)}}>
+        <div className="reply-container" onClick={() => {document.dispatchEvent(new CustomEvent('dataEntry', {detail: props}))}}>
             <img className="replySVG" src={ReplySVG} />
         </div>
     )
