@@ -22,13 +22,15 @@ const format = (replyText) => {
 
 const inject = (addedNode) => {
     const tweetContainer = addedNode.firstChild.firstChild;
-    const tweetSpan = tweetContainer.firstChild.nextSibling.firstChild.firstChild.firstChild as HTMLSpanElement;
+    const incomingMessageSpan = tweetContainer.firstChild.nextSibling.firstChild.firstChild.firstChild as HTMLSpanElement;
+    const outgoingMessageSpan = tweetContainer.firstChild.firstChild.firstChild.firstChild as HTMLSpanElement;
     const buttonMenu = tweetContainer.lastChild;
     const button = buttonMenu.lastChild as HTMLDivElement;
     if (button.getAttribute("aria-label") === "More actions") {
         const container = document.createElement("div");
         buttonMenu.appendChild(container);
-        ReactDOM.render(Reply({ data: format(tweetSpan.innerText) }), container);
+        const messageText = incomingMessageSpan.innerText || outgoingMessageSpan.innerText;
+        ReactDOM.render(Reply({ data: format(messageText) }), container);
     }
 }
 
