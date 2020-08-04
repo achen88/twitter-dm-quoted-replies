@@ -5,10 +5,9 @@ import "../styles/content.css";
 
 const ReplySVG = chrome.runtime.getURL('js/' + svgHash);
 
-const replyHeader = "Replied to you:\n"
 const truncateLength = 100;
 
-const format = (replyText) => {
+const format = (replyHeader, replyText) => {
     if (replyText.indexOf("Quote Tweet") === 0) {
         const nextNewLineIndex = replyText.indexOf("\n", 12);
         const lastNewLineIndex = replyText.indexOf("\n", nextNewLineIndex+1);
@@ -29,8 +28,15 @@ const inject = (addedNode) => {
     if (button.getAttribute("aria-label") === "More actions") {
         const container = document.createElement("div");
         buttonMenu.appendChild(container);
-        const messageText = incomingMessageSpan.innerText || outgoingMessageSpan.innerText;
-        ReactDOM.render(Reply({ data: format(messageText) }), container);
+        let messageText, replyHeader;
+        if (incomingMessageSpan.innerText) {
+            messageText = incomingMessageSpan.innerText;
+            replyHeader = "Replied to you:\n";
+        } else {
+            messageText = outgoingMessageSpan.innerText;
+            replyHeader = "Replied to me:\n";
+        }
+        ReactDOM.render(Reply({ data: format(replyHeader, messageText) }), container);
     }
 }
 
