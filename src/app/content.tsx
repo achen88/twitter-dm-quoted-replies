@@ -2,12 +2,16 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import svgHash from "../reply.svg";
 import "../styles/content.css";
+import { truncateLength, delimiter } from "../constants";
 
 const ReplySVG = chrome.runtime.getURL('js/' + svgHash);
 
-const truncateLength = 100;
-
 const format = (replyHeader, replyText) => {
+    // truncate reply header if original message was a reply
+    if (replyText.lastIndexOf(delimiter) !== -1) {
+        replyText = replyText.substring(replyText.lastIndexOf(delimiter) + delimiter.length);
+    }
+    // format Quoted Tweets
     if (replyText.indexOf("Quote Tweet") === 0) {
         const nextNewLineIndex = replyText.indexOf("\n", 12);
         const lastNewLineIndex = replyText.indexOf("\n", nextNewLineIndex+1);
@@ -47,7 +51,7 @@ let observer = new MutationObserver(mutations => {
                 console.log(addedNode);
                 try {
                     inject(addedNode);
-                } catch (error) {} // bro i dont give a fuuuuuuck, body that shit
+                } catch (error) {} // lol
             }
         }
     }
