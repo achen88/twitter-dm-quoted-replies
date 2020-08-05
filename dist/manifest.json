@@ -9,9 +9,6 @@
       "128": "icons/icon128.png"
     },
     "default_locale": "en",
-    "permissions": [
-      "https://twitter.com/*"
-    ],
     "content_security_policy": "default-src 'self';",
     "content_scripts": [
       {
