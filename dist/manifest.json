@@ -1,6 +1,6 @@
 {
     "name": "Twitter DM Quoted Replies",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "manifest_version": 2,
     "description": "Facebook-esque quoted replies for Twitter DMs.",
     "homepage_url": "https://www.google.com",
@@ -14,20 +14,14 @@
       "default_popup": "popup.html"
     },
     "default_locale": "en",
-    "background": {
-      "scripts": [
-        "js/background.js"
-      ],
-      "persistent": true
-    },
     "permissions": [
-      "https://*/*"
+      "https://twitter.com/*"
     ],
     "content_security_policy": "default-src 'self';",
     "content_scripts": [
       {
         "matches": [
-          "https://*/*"
+          "https://twitter.com/*"
         ],
         "js": [
           "js/content.js"
