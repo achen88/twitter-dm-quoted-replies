@@ -25,22 +25,16 @@ const format = (replyHeader, replyText) => {
 }
 
 const inject = (addedNode) => {
-    const tweetContainer = addedNode.firstChild.firstChild;
-    const incomingMessageContainer = tweetContainer?.firstChild?.nextSibling?.firstChild?.firstChild as HTMLSpanElement;
-    const outgoingMessageContainer = tweetContainer?.firstChild?.firstChild?.firstChild as HTMLSpanElement;
-    const buttonMenu = tweetContainer.lastChild;
+    const tweetContainer = addedNode.firstChild.firstChild.firstChild;
+    const messageContainer = tweetContainer?.firstChild?.nextSibling?.firstChild?.firstChild as HTMLSpanElement;
+    const buttonMenu = tweetContainer.firstChild;
     const button = buttonMenu.lastChild as HTMLDivElement;
     if (button.getAttribute("aria-label") === "More actions") {
         const container = document.createElement("div");
         buttonMenu.appendChild(container);
-        let messageText, replyHeader;
-        if (incomingMessageContainer.innerText) {
-            messageText = incomingMessageContainer.innerText;
-            replyHeader = "Replied to you:\n";
-        } else {
-            messageText = outgoingMessageContainer.innerText;
-            replyHeader = "Replied to me:\n";
-        }
+        const messageText = messageContainer.innerText;
+        const messageOrigin = tweetContainer.childElementCount === 3 ? "you" : "me";
+        const replyHeader = `Replied to ${messageOrigin}:\n`;
         ReactDOM.render(Reply({ data: format(replyHeader, messageText) }), container);
     }
 }
